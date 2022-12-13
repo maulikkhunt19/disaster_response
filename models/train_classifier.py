@@ -18,6 +18,11 @@ from sklearn.multioutput import MultiOutputClassifier
 nltk.download(['wordnet', 'stopwords'])
 
 def load_data(database_filepath):
+    '''
+    load_data -> load the data from given database file 
+    arg -> database file path
+    return -> list of message, values of categories and list of all categories
+    '''
     
     sql_engine = create_engine('sqlite:///'+database_filepath)
     disaster_reponse_table = pd.read_sql_table('DisasterResponseTable', sql_engine)
@@ -28,6 +33,11 @@ def load_data(database_filepath):
     return values, categories.values, categories.columns
 
 def tokenize(text):
+    '''
+    tokenize -> dividing the whole text into words and return root form
+    arg -> text which we have to tokenize
+    return -> a list of the word of given message in the root forms
+    '''
     str_translator = str.maketrans('', '', string.punctuation)
     text_edited = text.lower().strip().translate(str_translator)
     
@@ -40,6 +50,10 @@ def tokenize(text):
     return words
     
 def build_model():
+    '''
+    build_model -> building a model to classify the message with pipeline
+    return -> return classification model
+    '''
     rf_estimator = RandomForestClassifier()
     pipeline = Pipeline([
         ('count_vectorizer', CountVectorizer(tokenizer=tokenize)),
@@ -62,11 +76,18 @@ def build_model():
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
+    '''
+    evaluate_model ->  to predict the trained model by giving the classification report
+    arg -> trained model, test data with actual output and list of categories
+    '''
     y_pred = model.predict(X_test)
     print(classification_report(Y_test, y_pred, target_names=category_names))
 
-
 def save_model(model, model_filepath):
+    '''
+    save_model -> to save the model to .pkl file
+    arg -> trained model and output file path
+    '''
     with open(model_filepath, 'wb') as file:
         pickle.dump(model, file)
 

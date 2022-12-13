@@ -3,7 +3,12 @@ import pandas as pd
 from sqlalchemy import create_engine
 
 def load_data(messages_filepath, categories_filepath):
-    
+    '''
+    load_data -> reading the data from given file path of csv
+    and store it into pandas
+    arg -> message file path and categories file path
+    return -> the dataframe after merging the message and categories
+    '''
     all_messages = pd.read_csv(messages_filepath)
     message_categoty = pd.read_csv(categories_filepath)
 #     print(all_messages.shape)
@@ -13,6 +18,11 @@ def load_data(messages_filepath, categories_filepath):
     return result
     
 def clean_data(df):
+    '''
+    clean_data -> remove the unnecessary data from dataframe
+    arg -> dataframe
+    return -> cleaned dataset with message and categories
+    '''
     categories = df['categories'].str.split(';', expand=True)
     categories.columns = categories.iloc[1].str.split('-').str.get(0)
     
@@ -26,8 +36,12 @@ def clean_data(df):
     
     
 def save_data(df, database_filename):
+    '''
+    save_data -> saving the dataframe to the database file
+    arg -> cleaned dataframe and output file name
+    '''
     sql_engine = create_engine('sqlite:///' + database_filename)
-    df.to_sql('DisasterResponseTable', sql_engine, index = False)
+    df.to_sql('DisasterResponseTable', sql_engine, index = False, if_exists='replace')
 
 
 def main():
